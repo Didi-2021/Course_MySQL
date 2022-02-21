@@ -1,0 +1,116 @@
+mysql> USE vk;
+Database changed
+
+mysql> SHOW TABLES;
++---------------------+
+| Tables_in_vk        |
++---------------------+
+| communities         |
+| communities_users   |
+| friendship          |
+| friendship_statuses |
+| likes               |
+| media               |
+| media_types         |
+| messages            |
+| posts               |
+| profiles            |
+| users               |
++---------------------+
+11 rows in set (0.01 sec)
+
+mysql> DESC posts;
++--------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| Field        | Type         | Null | Key | Default           | Extra                                         |
++--------------+--------------+------+-----+-------------------+-----------------------------------------------+
+| id           | int unsigned | NO   | PRI | NULL              | auto_increment                                |
+| user_id      | int unsigned | NO   |     | NULL              |                                               |
+| community_id | int unsigned | YES  |     | NULL              |                                               |
+| head         | varchar(255) | YES  | MUL | NULL              |                                               |
+| body         | text         | NO   |     | NULL              |                                               |
+| media_id     | int unsigned | YES  |     | NULL              |                                               |
+| is_public    | tinyint(1)   | YES  |     | 1                 |                                               |
+| is_archived  | tinyint(1)   | YES  |     | 0                 |                                               |
+| created_at   | datetime     | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED                             |
+| updated_at   | datetime     | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED on update CURRENT_TIMESTAMP |
++--------------+--------------+------+-----+-------------------+-----------------------------------------------+
+10 rows in set (0.01 sec)
+
+mysql> CREATE INDEX posts_head_idx ON posts(head);
+Query OK, 0 rows affected (0.10 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM posts;
++-------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name       | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| posts |          0 | PRIMARY        |            1 | id          | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| posts |          1 | posts_head_idx |            1 | head        | A         |          68 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++-------+------------+----------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+2 rows in set (0.00 sec)
+
+mysql> CREATE INDEX users_first_name_last_name_idx ON users(first_name, last_name);
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM users;
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name                       | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| users |          0 | PRIMARY                        |            1 | id          | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | email                          |            1 | email       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | phone                          |            1 | phone       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          1 | users_first_name_last_name_idx |            1 | first_name  | A         |          99 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          1 | users_first_name_last_name_idx |            2 | last_name   | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+5 rows in set (0.01 sec)
+
+mysql> CREATE UNIQUE INDEX users_email_uq ON users(email);
+Query OK, 0 rows affected, 1 warning (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+mysql> SHOW INDEX FROM users;
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name                       | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| users |          0 | PRIMARY                        |            1 | id          | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | email                          |            1 | email       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | phone                          |            1 | phone       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | users_email_uq                 |            1 | email       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          1 | users_first_name_last_name_idx |            1 | first_name  | A         |          99 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          1 | users_first_name_last_name_idx |            2 | last_name   | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++-------+------------+--------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+6 rows in set (0.01 sec)
+
+mysql> ALTER TABLE posts DROP INDEX posts_head_idx;ALTER TABLE users DROP INDEX users_first_name_last_name_idx;ALTER TABLE users DROP index users_email_uq;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM posts;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| posts |          0 | PRIMARY  |            1 | id          | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+1 row in set (0.00 sec)
+
+mysql> SHOW INDEX FROM users;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| users |          0 | PRIMARY  |            1 | id          | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | email    |            1 | email       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| users |          0 | phone    |            1 | phone       | A         |         100 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.00 sec)
+
+
+#################################################
+
+
